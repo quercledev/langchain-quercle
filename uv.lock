@@ -249,7 +249,7 @@ wheels = [
 
 [[package]]
 name = "langchain-quercle"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "langchain-core" },
@@ -270,7 +270,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24" },
-    { name = "quercle", specifier = ">=0.1.0" },
+    { name = "quercle", specifier = ">=0.1.2" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8" },
 ]
 provides-extras = ["dev"]
@@ -633,14 +633,14 @@ wheels = [
 
 [[package]]
 name = "quercle"
-version = "0.1.1"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/e5/c31bb41593fa551b33e27ac3e328bbca4b781395c3765a02a1ea44a0b5df/quercle-0.1.1.tar.gz", hash = "sha256:33923bdcabc0e042673e86d4b86ddb619b33d1aeb4bc7545f68bf90762803a60", size = 44204, upload-time = "2025-12-04T12:56:32.591Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/d3/ac4c81697079cccc49ad7a10f6be23209c48b17264e33c5ca80ca6950398/quercle-0.1.2.tar.gz", hash = "sha256:c10c9fa277d71c6f7cd9eee433628d3bbe5fe9f326da0291562a5556da3be952", size = 44089, upload-time = "2025-12-10T10:47:21.566Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/92/ad7841196871c9cba81800532b63601d107df09f458303d4a96b8e037f49/quercle-0.1.1-py3-none-any.whl", hash = "sha256:07d391990910803bc567b08d29a95cb86de8e172bfc48ac4634c568ce4d81228", size = 8602, upload-time = "2025-12-04T12:56:31.59Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/59/7d348028295528b806b00eb0b59dbdea65dff8d29433e2ab94f06f5b7858/quercle-0.1.2-py3-none-any.whl", hash = "sha256:cc555a0c1ea732e037245ae2994b23002b629e7fb719f365c942475ea9758afc", size = 8552, upload-time = "2025-12-10T10:47:20.586Z" },
 ]
 
 [[package]]
