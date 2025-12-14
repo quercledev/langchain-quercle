@@ -28,29 +28,9 @@ search = QuercleSearchTool(api_key="qk_...")
 fetch = QuercleFetchTool(api_key="qk_...")
 ```
 
-## Usage with LangChain Agents
+## Standalone Tool Usage
 
-```python
-from langchain.agents import initialize_agent, AgentType
-from langchain_openai import ChatOpenAI
-from quercle_langchain import QuercleSearchTool, QuercleFetchTool
-
-# Initialize tools
-tools = [QuercleSearchTool(), QuercleFetchTool()]
-
-# Create agent
-llm = ChatOpenAI(model="gpt-4")
-agent = initialize_agent(
-    tools=tools,
-    llm=llm,
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-)
-
-# Run the agent
-result = agent.run("Search for the latest Python release and summarize it")
-```
-
-## Direct Tool Usage
+Use the tools directly without any LLM:
 
 ### Search
 
@@ -85,7 +65,7 @@ result = fetch.invoke({
 print(result)
 ```
 
-## Async Usage
+### Async Usage
 
 Both tools support async operations:
 
@@ -109,6 +89,81 @@ async def main():
     print(result)
 
 asyncio.run(main())
+```
+
+## Usage with LangChain Chat Models
+
+### Using `bind_tools()` for Single Interactions
+
+Bind tools directly to a chat model for single-turn tool calling:
+
+```python
+from langchain_openai import ChatOpenAI
+from quercle_langchain import QuercleSearchTool, QuercleFetchTool
+
+# Initialize tools and model
+tools = [QuercleSearchTool(), QuercleFetchTool()]
+llm = ChatOpenAI(model="gpt-4o")
+
+# Bind tools to the model
+llm_with_tools = llm.bind_tools(tools)
+
+# Invoke - the model will decide whether to use tools
+response = llm_with_tools.invoke("Search for the latest Python 3.13 features")
+
+# Access tool calls from the response
+if response.tool_calls:
+    for tool_call in response.tool_calls:
+        print(f"Tool: {tool_call['name']}")
+        print(f"Args: {tool_call['args']}")
+```
+
+### Using Agents for Multi-Step Tasks
+
+For autonomous multi-step tasks, use `create_agent`:
+
+```python
+from langchain.agents import create_agent
+from quercle_langchain import QuercleSearchTool, QuercleFetchTool
+
+# Initialize tools
+tools = [QuercleSearchTool(), QuercleFetchTool()]
+
+# Create the agent
+agent = create_agent(
+    model="gpt-4o",  # or "claude-sonnet-4-5-20250929", "gemini-2.0-flash", etc.
+    tools=tools,
+    system_prompt="You are a helpful research assistant.",
+)
+
+# Run the agent
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "Search for the latest Python release and summarize the key features"}]
+})
+
+# Print the final response
+print(result["messages"][-1].content)
+```
+
+### With Other LLM Providers
+
+Both `bind_tools()` and `create_agent()` work with any LangChain-compatible chat model:
+
+```python
+# With Anthropic
+from langchain_anthropic import ChatAnthropic
+llm = ChatAnthropic(model="claude-sonnet-4-20250514")
+llm_with_tools = llm.bind_tools(tools)
+
+# With Google
+from langchain_google_genai import ChatGoogleGenerativeAI
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+llm_with_tools = llm.bind_tools(tools)
+
+# Or use create_agent with model strings directly
+from langchain.agents import create_agent
+agent = create_agent(model="claude-sonnet-4-5-20250929", tools=tools)
+agent = create_agent(model="gemini-2.0-flash", tools=tools)
 ```
 
 ## Configuration
