@@ -249,7 +249,7 @@ wheels = [
 
 [[package]]
 name = "langchain-quercle"
-version = "0.1.1"
+version = "0.1.3"
 source = { editable = "." }
 dependencies = [
     { name = "langchain-core" },
@@ -633,14 +633,14 @@ wheels = [
 
 [[package]]
 name = "quercle"
-version = "0.1.3"
+version = "0.1.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e8/71/d0f12a1893b6f3b700ff454ec7e50e869af00b9f2fcc12543f0409c46ea1/quercle-0.1.3.tar.gz", hash = "sha256:ba94d1b1c6faa1a3aaaeefa7a91006b8d49c45f96d259d5755996b7fbe5c5db2", size = 44186, upload-time = "2025-12-12T15:29:16.189Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/af/f4/43580aba78efdb8627b45d1d72583b0f41258acbc8ac61f2c4c71fe8c995/quercle-0.1.4.tar.gz", hash = "sha256:e1377224a088361cfbd7e40322382e084cd93eb9ccd3dc7cd1b6d8166b00598c", size = 44178, upload-time = "2025-12-15T14:29:51.189Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/e0/9ec28e2ffb41fadac1d2453ed5c9209881119843fb735eceaad59bb323d7/quercle-0.1.3-py3-none-any.whl", hash = "sha256:522ec9c7556458056b45d9ea3b4799221e3e49dd2c43169e723b21e0ad507c06", size = 8644, upload-time = "2025-12-12T15:29:14.854Z" },
+    { url = "https://files.pythonhosted.org/packages/88/e9/f0d29a42c2a6430f71431716e2d9fcb30edc54b9a8acff78b72e3236aefb/quercle-0.1.4-py3-none-any.whl", hash = "sha256:164c87c5b87d317e9050af18a29f255cdb5d7d3b7f8c897ecdbb8344093580b6", size = 8634, upload-time = "2025-12-15T14:29:49.757Z" },
 ]
 
 [[package]]
