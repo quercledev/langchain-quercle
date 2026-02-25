@@ -231,7 +231,7 @@ Raw web search results without AI synthesis.
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `query` | `str` | Yes | The search query |
-| `format` | `str` | No | Output format (e.g. `"json"`) |
+| `format` | `str` | No | Output format (`"markdown"` or `"json"`) |
 | `use_safeguard` | `bool` | No | Enable prompt-injection detection |
 
 ### QuercleRawFetchTool
@@ -241,7 +241,7 @@ Raw URL content without AI processing.
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `url` | `str` | Yes | The URL to fetch |
-| `format` | `str` | No | Output format (e.g. `"json"`) |
+| `format` | `str` | No | Output format (`"markdown"` or `"html"`) |
 | `use_safeguard` | `bool` | No | Enable prompt-injection detection |
 
 ### QuercleExtractTool
@@ -252,7 +252,7 @@ Extract content chunks relevant to a query from a URL.
 |---|---|---|---|
 | `url` | `str` | Yes | The URL to fetch and extract from |
 | `query` | `str` | Yes | What information to extract |
-| `format` | `str` | No | Output format (e.g. `"json"`) |
+| `format` | `str` | No | Output format (`"markdown"` or `"json"`) |
 | `use_safeguard` | `bool` | No | Enable prompt-injection detection |
 
 ## Configuration
