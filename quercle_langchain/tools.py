@@ -14,6 +14,7 @@ from quercle import (
     QuercleClient,
     tool_metadata,
 )
+from quercle.models import ExtractBodyFormat, RawFetchBodyFormat, RawSearchBodyFormat
 
 
 class SearchInput(BaseModel):
@@ -41,7 +42,7 @@ class RawFetchInput(BaseModel):
     """Input schema for the Quercle raw fetch tool."""
 
     url: str = Field(description=tool_metadata["raw_fetch"]["parameters"]["url"])
-    format: Optional[str] = Field(
+    format: Optional[RawFetchBodyFormat] = Field(
         default=None,
         description=tool_metadata["raw_fetch"]["parameters"]["format"],
     )
@@ -55,7 +56,7 @@ class RawSearchInput(BaseModel):
     """Input schema for the Quercle raw search tool."""
 
     query: str = Field(description=tool_metadata["raw_search"]["parameters"]["query"])
-    format: Optional[str] = Field(
+    format: Optional[RawSearchBodyFormat] = Field(
         default=None,
         description=tool_metadata["raw_search"]["parameters"]["format"],
     )
@@ -70,7 +71,7 @@ class ExtractInput(BaseModel):
 
     url: str = Field(description=tool_metadata["extract"]["parameters"]["url"])
     query: str = Field(description=tool_metadata["extract"]["parameters"]["query"])
-    format: Optional[str] = Field(
+    format: Optional[ExtractBodyFormat] = Field(
         default=None,
         description=tool_metadata["extract"]["parameters"]["format"],
     )
@@ -305,7 +306,7 @@ class QuercleRawFetchTool(BaseTool):
     def _run(
         self,
         url: str,
-        format: Optional[str] = None,
+        format: Optional[RawFetchBodyFormat] = None,
         use_safeguard: Optional[bool] = None,
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
@@ -329,7 +330,7 @@ class QuercleRawFetchTool(BaseTool):
     async def _arun(
         self,
         url: str,
-        format: Optional[str] = None,
+        format: Optional[RawFetchBodyFormat] = None,
         use_safeguard: Optional[bool] = None,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
@@ -397,7 +398,7 @@ class QuercleRawSearchTool(BaseTool):
     def _run(
         self,
         query: str,
-        format: Optional[str] = None,
+        format: Optional[RawSearchBodyFormat] = None,
         use_safeguard: Optional[bool] = None,
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
@@ -421,7 +422,7 @@ class QuercleRawSearchTool(BaseTool):
     async def _arun(
         self,
         query: str,
-        format: Optional[str] = None,
+        format: Optional[RawSearchBodyFormat] = None,
         use_safeguard: Optional[bool] = None,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
@@ -493,7 +494,7 @@ class QuercleExtractTool(BaseTool):
         self,
         url: str,
         query: str,
-        format: Optional[str] = None,
+        format: Optional[ExtractBodyFormat] = None,
         use_safeguard: Optional[bool] = None,
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
@@ -519,7 +520,7 @@ class QuercleExtractTool(BaseTool):
         self,
         url: str,
         query: str,
-        format: Optional[str] = None,
+        format: Optional[ExtractBodyFormat] = None,
         use_safeguard: Optional[bool] = None,
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
