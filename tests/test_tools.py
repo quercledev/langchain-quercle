@@ -31,7 +31,7 @@ class TestQuercleSearchTool:
     def test_run_basic_search(self, mock_client_class):
         """Test synchronous search execution."""
         mock_client = MagicMock()
-        mock_client.search.return_value = "AI answer with citations"
+        mock_client.search.return_value = MagicMock(result="AI answer with citations")
         mock_client_class.return_value = mock_client
 
         tool = QuercleSearchTool(api_key="qk_test")
@@ -42,13 +42,14 @@ class TestQuercleSearchTool:
             "What is Python?",
             allowed_domains=None,
             blocked_domains=None,
+            timeout=None,
         )
 
     @patch("quercle_langchain.tools.QuercleClient")
     def test_run_search_with_domain_filters(self, mock_client_class):
         """Test synchronous search with domain filtering."""
         mock_client = MagicMock()
-        mock_client.search.return_value = "Filtered results"
+        mock_client.search.return_value = MagicMock(result="Filtered results")
         mock_client_class.return_value = mock_client
 
         tool = QuercleSearchTool(api_key="qk_test")
@@ -63,6 +64,7 @@ class TestQuercleSearchTool:
             "TypeScript",
             allowed_domains=["*.org", "*.edu"],
             blocked_domains=["spam.com"],
+            timeout=None,
         )
 
     @pytest.mark.asyncio
@@ -70,7 +72,7 @@ class TestQuercleSearchTool:
     async def test_arun_basic_search(self, mock_client_class):
         """Test asynchronous search execution."""
         mock_client = AsyncMock()
-        mock_client.search.return_value = "Async AI answer"
+        mock_client.search.return_value = MagicMock(result="Async AI answer")
         mock_client_class.return_value = mock_client
 
         tool = QuercleSearchTool(api_key="qk_test")
@@ -81,6 +83,7 @@ class TestQuercleSearchTool:
             "What is Rust?",
             allowed_domains=None,
             blocked_domains=None,
+            timeout=None,
         )
 
     @pytest.mark.asyncio
@@ -88,7 +91,7 @@ class TestQuercleSearchTool:
     async def test_arun_search_with_domain_filters(self, mock_client_class):
         """Test asynchronous search with domain filtering."""
         mock_client = AsyncMock()
-        mock_client.search.return_value = "Async filtered results"
+        mock_client.search.return_value = MagicMock(result="Async filtered results")
         mock_client_class.return_value = mock_client
 
         tool = QuercleSearchTool(api_key="qk_test")
@@ -103,6 +106,7 @@ class TestQuercleSearchTool:
             "Go programming",
             allowed_domains=["*.dev"],
             blocked_domains=["ads.com"],
+            timeout=None,
         )
 
 
@@ -130,7 +134,7 @@ class TestQuercleFetchTool:
     def test_run_fetch(self, mock_client_class):
         """Test synchronous fetch execution."""
         mock_client = MagicMock()
-        mock_client.fetch.return_value = "Page summary content"
+        mock_client.fetch.return_value = MagicMock(result="Page summary content")
         mock_client_class.return_value = mock_client
 
         tool = QuercleFetchTool(api_key="qk_test")
@@ -140,6 +144,7 @@ class TestQuercleFetchTool:
         mock_client.fetch.assert_called_once_with(
             url="https://example.com",
             prompt="Summarize this page",
+            timeout=None,
         )
 
     @pytest.mark.asyncio
@@ -147,7 +152,7 @@ class TestQuercleFetchTool:
     async def test_arun_fetch(self, mock_client_class):
         """Test asynchronous fetch execution."""
         mock_client = AsyncMock()
-        mock_client.fetch.return_value = "Async page analysis"
+        mock_client.fetch.return_value = MagicMock(result="Async page analysis")
         mock_client_class.return_value = mock_client
 
         tool = QuercleFetchTool(api_key="qk_test")
@@ -160,6 +165,7 @@ class TestQuercleFetchTool:
         mock_client.fetch.assert_called_once_with(
             url="https://docs.python.org",
             prompt="Extract the key features",
+            timeout=None,
         )
 
 
@@ -170,7 +176,7 @@ class TestToolIntegration:
         """Test that tools work with LangChain's invoke interface."""
         with patch("quercle_langchain.tools.QuercleClient") as mock_client_class:
             mock_client = MagicMock()
-            mock_client.search.return_value = "Search result"
+            mock_client.search.return_value = MagicMock(result="Search result")
             mock_client_class.return_value = mock_client
 
             tool = QuercleSearchTool(api_key="qk_test")
@@ -182,7 +188,7 @@ class TestToolIntegration:
         """Test that fetch tool works with LangChain's invoke interface."""
         with patch("quercle_langchain.tools.QuercleClient") as mock_client_class:
             mock_client = MagicMock()
-            mock_client.fetch.return_value = "Fetch result"
+            mock_client.fetch.return_value = MagicMock(result="Fetch result")
             mock_client_class.return_value = mock_client
 
             tool = QuercleFetchTool(api_key="qk_test")
@@ -195,7 +201,7 @@ class TestToolIntegration:
         """Test that tools work with LangChain's ainvoke interface."""
         with patch("quercle_langchain.tools.AsyncQuercleClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client.search.return_value = "Async search result"
+            mock_client.search.return_value = MagicMock(result="Async search result")
             mock_client_class.return_value = mock_client
 
             tool = QuercleSearchTool(api_key="qk_test")

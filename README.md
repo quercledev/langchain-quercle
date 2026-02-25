@@ -1,213 +1,268 @@
-# quercle-langchain
+# langchain-quercle
 
-LangChain tools for [Quercle](https://quercle.dev) web search and URL fetching.
+Quercle web search, fetch, and extraction tools for [LangChain](https://python.langchain.com/).
 
 ## Installation
 
 ```bash
 uv add langchain-quercle
-```
-
-Or with pip:
-
-```bash
+# or
 pip install langchain-quercle
 ```
+
+## Setup
+
+Set your API key as an environment variable:
+
+```bash
+export QUERCLE_API_KEY=qk_...
+```
+
+Get your API key at [quercle.dev](https://quercle.dev).
 
 ## Quick Start
 
 ```python
 from quercle_langchain import QuercleSearchTool, QuercleFetchTool
 
-# Initialize tools (uses QUERCLE_API_KEY env var by default)
 search = QuercleSearchTool()
-fetch = QuercleFetchTool()
-
-# Or with explicit API key
-search = QuercleSearchTool(api_key="qk_...")
-fetch = QuercleFetchTool(api_key="qk_...")
+result = search.invoke("latest developments in AI agents")
+print(result)
 ```
 
-## Standalone Tool Usage
+## Tools
 
-Use the tools directly without any LLM:
+| Tool | Description | Key Args |
+|---|---|---|
+| `QuercleSearchTool` | AI-synthesized web search with citations | `query`, `allowed_domains`, `blocked_domains` |
+| `QuercleFetchTool` | Fetch a URL and analyze content with AI | `url`, `prompt` |
+| `QuercleRawSearchTool` | Raw web search results (markdown/JSON) | `query`, `format`, `use_safeguard` |
+| `QuercleRawFetchTool` | Raw URL content (markdown/HTML) | `url`, `format`, `use_safeguard` |
+| `QuercleExtractTool` | Extract relevant content chunks from a URL | `url`, `query`, `format`, `use_safeguard` |
 
-### Search
+## Direct Tool Usage
+
+### Sync
 
 ```python
-from quercle_langchain import QuercleSearchTool
+from quercle_langchain import (
+    QuercleSearchTool,
+    QuercleFetchTool,
+    QuercleRawSearchTool,
+    QuercleRawFetchTool,
+    QuercleExtractTool,
+)
 
+# AI-synthesized search
 search = QuercleSearchTool()
-
-# Basic search
-result = search.invoke({"query": "What is TypeScript?"})
+result = search.invoke("best practices for building AI agents")
 print(result)
 
-# With domain filtering
+# Search with domain filtering
 result = search.invoke({
-    "query": "machine learning tutorials",
-    "allowed_domains": ["*.edu", "*.org"],
-    "blocked_domains": ["ads.com"],
+    "query": "Python documentation",
+    "allowed_domains": ["docs.python.org"],
 })
-```
 
-### Fetch
-
-```python
-from quercle_langchain import QuercleFetchTool
-
+# Fetch and analyze a page with AI
 fetch = QuercleFetchTool()
-
 result = fetch.invoke({
-    "url": "https://docs.python.org/3/whatsnew/3.12.html",
-    "prompt": "Summarize the key new features in bullet points",
+    "url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
+    "prompt": "Summarize the key features of Python",
+})
+print(result)
+
+# Raw search results
+raw_search = QuercleRawSearchTool()
+result = raw_search.invoke({"query": "Python tutorials", "format": "json"})
+print(result)
+
+# Raw URL content
+raw_fetch = QuercleRawFetchTool()
+result = raw_fetch.invoke({"url": "https://example.com", "use_safeguard": True})
+print(result)
+
+# Extract relevant content from a URL
+extract = QuercleExtractTool()
+result = extract.invoke({
+    "url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
+    "query": "What are Python's main features?",
+    "format": "json",
 })
 print(result)
 ```
 
-### Async Usage
-
-Both tools support async operations:
+### Async
 
 ```python
 import asyncio
-from quercle_langchain import QuercleSearchTool, QuercleFetchTool
+from quercle_langchain import (
+    QuercleSearchTool,
+    QuercleFetchTool,
+    QuercleRawSearchTool,
+    QuercleRawFetchTool,
+    QuercleExtractTool,
+)
 
 async def main():
+    # AI-synthesized search
     search = QuercleSearchTool()
-    fetch = QuercleFetchTool()
-
-    # Async search
-    result = await search.ainvoke({"query": "async Python programming"})
+    result = await search.ainvoke("latest AI agent frameworks")
     print(result)
 
-    # Async fetch
+    # Fetch and analyze with AI
+    fetch = QuercleFetchTool()
     result = await fetch.ainvoke({
-        "url": "https://example.com",
-        "prompt": "Extract main topics",
+        "url": "https://en.wikipedia.org/wiki/TypeScript",
+        "prompt": "What is TypeScript?",
+    })
+    print(result)
+
+    # Raw search results
+    raw_search = QuercleRawSearchTool()
+    result = await raw_search.ainvoke({"query": "Python tutorials", "format": "json"})
+    print(result)
+
+    # Raw URL content
+    raw_fetch = QuercleRawFetchTool()
+    result = await raw_fetch.ainvoke({"url": "https://example.com"})
+    print(result)
+
+    # Extract relevant content
+    extract = QuercleExtractTool()
+    result = await extract.ainvoke({
+        "url": "https://en.wikipedia.org/wiki/TypeScript",
+        "query": "What is TypeScript used for?",
     })
     print(result)
 
 asyncio.run(main())
 ```
 
-## Usage with LangChain Chat Models
-
-### Using `bind_tools()` for Single Interactions
-
-Bind tools directly to a chat model for single-turn tool calling:
+### Custom API Key
 
 ```python
-from langchain_openai import ChatOpenAI
-from quercle_langchain import QuercleSearchTool, QuercleFetchTool
-
-# Initialize tools and model
-tools = [QuercleSearchTool(), QuercleFetchTool()]
-llm = ChatOpenAI(model="gpt-4o")
-
-# Bind tools to the model
-llm_with_tools = llm.bind_tools(tools)
-
-# Invoke - the model will decide whether to use tools
-response = llm_with_tools.invoke("Search for the latest Python 3.13 features")
-
-# Access tool calls from the response
-if response.tool_calls:
-    for tool_call in response.tool_calls:
-        print(f"Tool: {tool_call['name']}")
-        print(f"Args: {tool_call['args']}")
+search = QuercleSearchTool(api_key="qk_...")
+fetch = QuercleFetchTool(api_key="qk_...")
+raw_search = QuercleRawSearchTool(api_key="qk_...")
+raw_fetch = QuercleRawFetchTool(api_key="qk_...")
+extract = QuercleExtractTool(api_key="qk_...")
 ```
 
-### Using Agents for Multi-Step Tasks
+## Agentic Usage
 
-For autonomous multi-step tasks, use `create_agent`:
+### With LangGraph ReAct Agent
 
 ```python
-from langchain.agents import create_agent
-from quercle_langchain import QuercleSearchTool, QuercleFetchTool
-
-# Initialize tools
-tools = [QuercleSearchTool(), QuercleFetchTool()]
-
-# Create the agent
-agent = create_agent(
-    model="gpt-4o",  # or "claude-sonnet-4-5-20250929", "gemini-2.0-flash", etc.
-    tools=tools,
-    system_prompt="You are a helpful research assistant.",
+from quercle_langchain import (
+    QuercleSearchTool,
+    QuercleFetchTool,
+    QuercleRawSearchTool,
+    QuercleRawFetchTool,
+    QuercleExtractTool,
 )
+from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
 
-# Run the agent
-result = agent.invoke({
-    "messages": [{"role": "user", "content": "Search for the latest Python release and summarize the key features"}]
+model = ChatOpenAI(model="gpt-4o")
+tools = [
+    QuercleSearchTool(),
+    QuercleFetchTool(),
+    QuercleRawSearchTool(),
+    QuercleRawFetchTool(),
+    QuercleExtractTool(),
+]
+
+agent = create_react_agent(model, tools)
+
+response = agent.invoke({
+    "messages": [
+        {"role": "user", "content": "Search for the latest AI news and summarize the top story"}
+    ]
 })
 
-# Print the final response
-print(result["messages"][-1].content)
+print(response["messages"][-1].content)
 ```
 
-### With Other LLM Providers
-
-Both `bind_tools()` and `create_agent()` work with any LangChain-compatible chat model:
+### Streaming
 
 ```python
-# With Anthropic
+for chunk in agent.stream(
+    {"messages": [{"role": "user", "content": "Research WebAssembly trends"}]},
+    stream_mode="values",
+):
+    print(chunk["messages"][-1].content)
+```
+
+### With Anthropic
+
+```python
 from langchain_anthropic import ChatAnthropic
-llm = ChatAnthropic(model="claude-sonnet-4-20250514")
-llm_with_tools = llm.bind_tools(tools)
 
-# With Google
-from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-llm_with_tools = llm.bind_tools(tools)
-
-# Or use create_agent with model strings directly
-from langchain.agents import create_agent
-agent = create_agent(model="claude-sonnet-4-5-20250929", tools=tools)
-agent = create_agent(model="gemini-2.0-flash", tools=tools)
+model = ChatAnthropic(model="claude-sonnet-4-20250514")
+agent = create_react_agent(model, tools)
 ```
 
-## Configuration
-
-### Environment Variable
-
-Set your API key as an environment variable:
-
-```bash
-export QUERCLE_API_KEY=qk_your_api_key_here
-```
-
-### Tool Parameters
-
-Both tools accept these optional parameters:
-
-- `api_key`: Your Quercle API key (falls back to `QUERCLE_API_KEY` env var)
-- `timeout`: Request timeout in seconds
-
-```python
-tool = QuercleSearchTool(
-    api_key="qk_...",
-    timeout=60.0,
-)
-```
-
-## Tool Descriptions
+## API Reference
 
 ### QuercleSearchTool
 
-- **Name**: `search`
-- **Description**: Search the web and get AI-synthesized answers with citations
-- **Arguments**:
-  - `query` (required): The search query
-  - `allowed_domains` (optional): List of domains to include (e.g., `["*.edu"]`)
-  - `blocked_domains` (optional): List of domains to exclude
+AI-synthesized web search with citations.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `query` | `str` | Yes | The search query |
+| `allowed_domains` | `list[str]` | No | Only include results from these domains |
+| `blocked_domains` | `list[str]` | No | Exclude results from these domains |
 
 ### QuercleFetchTool
 
-- **Name**: `fetch`
-- **Description**: Fetch a URL and analyze its content with AI
-- **Arguments**:
-  - `url` (required): The URL to fetch
-  - `prompt` (required): Instructions for content analysis
+Fetch a URL and analyze its content with AI.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` | `str` | Yes | The URL to fetch |
+| `prompt` | `str` | Yes | Instructions for content analysis |
+
+### QuercleRawSearchTool
+
+Raw web search results without AI synthesis.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `query` | `str` | Yes | The search query |
+| `format` | `str` | No | Output format (e.g. `"json"`) |
+| `use_safeguard` | `bool` | No | Enable prompt-injection detection |
+
+### QuercleRawFetchTool
+
+Raw URL content without AI processing.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` | `str` | Yes | The URL to fetch |
+| `format` | `str` | No | Output format (e.g. `"json"`) |
+| `use_safeguard` | `bool` | No | Enable prompt-injection detection |
+
+### QuercleExtractTool
+
+Extract content chunks relevant to a query from a URL.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` | `str` | Yes | The URL to fetch and extract from |
+| `query` | `str` | Yes | What information to extract |
+| `format` | `str` | No | Output format (e.g. `"json"`) |
+| `use_safeguard` | `bool` | No | Enable prompt-injection detection |
+
+## Configuration
+
+All tools accept these constructor parameters:
+
+| Parameter | Default | Description |
+|---|---|---|
+| `api_key` | `QUERCLE_API_KEY` env var | Your Quercle API key |
+| `timeout` | `None` | Request timeout in seconds |
 
 ## License
 
